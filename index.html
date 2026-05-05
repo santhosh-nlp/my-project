@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grocery Shop App</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: linear-gradient(to right, #56ab2f, #a8e063);
+        }
+
+        .header {
+            text-align: center;
+            background: #2e7d32;
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+        }
+
+        .container {
+            width: 500px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+        }
+
+        input, select {
+            width: 95%;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid gray;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .search {
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #2e7d32;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .low {
+            color: red;
+            font-weight: bold;
+        }
+
+        .ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: red;
+            padding: 5px 8px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-btn:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">🛒 Grocery Shop Management</div>
+
+<div class="container">
+
+    <input type="text" id="name" placeholder="Item Name">
+    <input type="number" id="available" placeholder="Available Stock">
+    <input type="number" id="minimum" placeholder="Minimum Stock">
+
+    <select id="unit">
+        <option value="kg">kg</option>
+        <option value="packets">packets</option>
+        <option value="litres">litres</option>
+        <option value="pieces">pieces</option>
+    </select>
+
+    <button onclick="addItem()">➕ Add Item</button>
+
+    <input class="search" type="text" id="search" placeholder="🔍 Search item..." onkeyup="searchItem()">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Available</th>
+                <th>Minimum</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+</div>
+
+<script>
+
+let items = [
+    {name:"Rice", available:25, minimum:10, unit:"kg"},
+    {name:"Milk", available:6, minimum:10, unit:"packets"},
+    {name:"Sugar", available:15, minimum:10, unit:"kg"},
+    {name:"Oil", available:12, minimum:5, unit:"litres"},
+    {name:"Biscuit", available:3, minimum:5, unit:"packets"},
+    {name:"Salt", available:8, minimum:5, unit:"kg"},
+    {name:"Tea Powder", available:4, minimum:6, unit:"packets"},
+    {name:"Soap", available:20, minimum:10, unit:"pieces"},
+    {name:"Chilli", available:7, minimum:10, unit:"kg"},
+    {name:"Dal", available:18, minimum:12, unit:"kg"},
+    {name:"Masala Powder", available:5, minimum:8, unit:"packets"}
+];
+
+function displayItems(list = items) {
+    let table = document.getElementById("tableBody");
+    table.innerHTML = "";
+
+    list.forEach((item, index) => {
+        let status = item.available < item.minimum 
+            ? `<span class="low">Low ⚠️</span>` 
+            : `<span class="ok">OK ✅</span>`;
+
+        table.innerHTML += `
+        <tr>
+            <td>${item.name}</td>
+            <td>${item.available} ${item.unit}</td>
+            <td>${item.minimum} ${item.unit}</td>
+            <td>${status}</td>
+            <td><button class="delete-btn" onclick="deleteItem(${index})">Delete</button></td>
+        </tr>`;
+    });
+}
+
+function addItem() {
+    let name = document.getElementById("name").value;
+    let available = document.getElementById("available").value;
+    let minimum = document.getElementById("minimum").value;
+    let unit = document.getElementById("unit").value;
+
+    if(name === "" || available === "" || minimum === "") {
+        alert("Fill all fields!");
+        return;
+    }
+
+    items.push({
+        name,
+        available: Number(available),
+        minimum: Number(minimum),
+        unit
+    });
+
+    displayItems();
+
+    document.getElementById("name").value = "";
+    document.getElementById("available").value = "";
+    document.getElementById("minimum").value = "";
+}
+
+function deleteItem(index) {
+    items.splice(index, 1);
+    displayItems();
+}
+
+function searchItem() {
+    let search = document.getElementById("search").value.toLowerCase();
+    let filtered = items.filter(item => item.name.toLowerCase().includes(search));
+    displayItems(filtered);
+}
+
+displayItems();
+
+</script>
+
+</body>
+</html>
